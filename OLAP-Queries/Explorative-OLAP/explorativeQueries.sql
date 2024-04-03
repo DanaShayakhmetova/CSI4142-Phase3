@@ -25,3 +25,27 @@ SELECT Generation,
 FROM CustomerWineSpending;
 
 -- Window Clause Query 
+WITH CustomerSeasonalJoining AS (
+    SELECT
+        Customer_Key,
+        Education,
+        Dt_Customer,
+        CASE 
+            WHEN EXTRACT(MONTH FROM Dt_Customer) IN (3, 4, 5) THEN 'Spring'
+            WHEN EXTRACT(MONTH FROM Dt_Customer) IN (6, 7, 8) THEN 'Summer'
+            WHEN EXTRACT(MONTH FROM Dt_Customer) IN (9, 10, 11) THEN 'Fall'
+            WHEN EXTRACT(MONTH FROM Dt_Customer) IN (12, 1, 2) THEN 'Winter'
+        END AS Season
+    FROM
+        Customer
+)
+SELECT
+    Education,
+    Season,
+    COUNT(Customer_Key) AS Customer_Count_Per_Education_Level,
+    SUM(COUNT(Customer_Key)) OVER W AS Total_Customers_Per_Season
+FROM
+    CustomerSeasonalJoining
+GROUP BY
+    Season, Education
+WINDOW W AS (PARTITION BY Season);
