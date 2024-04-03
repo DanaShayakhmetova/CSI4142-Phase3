@@ -23,8 +23,15 @@ ORDER BY Year;
 
 
 -- Combination 3: Drill down and Dice 
-
-
+SELECT c.*,
+       CASE
+         WHEN Income < 40000 THEN 'Low Income'
+         WHEN Income BETWEEN 40000 AND 80000 THEN 'Middle Income'
+         ELSE 'High Income'
+       END AS Income_Group
+FROM Customer c
+WHERE c.Education IN ('PhD', 'Master')
+ORDER BY c.Customer_Key;
 
 
 
