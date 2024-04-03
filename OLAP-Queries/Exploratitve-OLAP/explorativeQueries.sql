@@ -14,13 +14,15 @@ ORDER BY
     Income_Group;
 
 
--- Combination 2: Drill down and Dice
+-- Combination 2: Roll up and Slice
+SELECT *,
+       EXTRACT(year FROM Dt_Customer) AS Year
+FROM Customer
+WHERE Education = 'Masters'
+ORDER BY Year;
 
 
-
-
-
--- Combination 3: Roll up and Slice
+-- Combination 3: Drill down and Dice 
 
 
 
