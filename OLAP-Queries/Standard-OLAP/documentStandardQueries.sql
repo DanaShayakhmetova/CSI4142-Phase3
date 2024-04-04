@@ -1,3 +1,5 @@
+-- SQL Queries that are mentioned in the Phase 3 Document
+
 -- Roll up by Year 
 SELECT EXTRACT(year FROM Dt_Customer) AS Year, COUNT(*) AS Customer_Count
 FROM Customer
