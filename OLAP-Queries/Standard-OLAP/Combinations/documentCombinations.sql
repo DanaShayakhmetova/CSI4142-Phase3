@@ -1,3 +1,5 @@
+-- SQL code that was mentioned in our Phase 3 Document 
+
 -- Combination 1 
 SELECT EXTRACT(year FROM Dt_Customer) AS Year, Marital_Status, COUNT(*) AS Customer_Count
 FROM Customer
