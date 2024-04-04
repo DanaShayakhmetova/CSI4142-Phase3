@@ -1,4 +1,4 @@
-# CSI4142-Phase3
+# CSI4142 Group 33: Phase 3 
 
 This repository contains the SQL code mentioned in the Phase 3 document. 
 
