@@ -1,11 +1,22 @@
 -- SQL code that was mentioned in our Phase 3 Document 
 
 -- Combination 1 
-SELECT EXTRACT(year FROM Dt_Customer) AS Year, Marital_Status, COUNT(*) AS Customer_Count
-FROM Customer
-GROUP BY EXTRACT(year FROM Dt_Customer), Marital_Status
-ORDER BY Year, Marital_Status;
-
+SELECT 
+    CASE
+        WHEN Income < 40000 THEN 'Low Income'
+        WHEN Income BETWEEN 40000 AND 80000 THEN 'Middle Income'
+        WHEN Income > 80000 THEN 'High Income'
+        ELSE 'Unknown'  
+    END AS Income_Group,
+    COUNT(*) AS Customer_Count
+FROM 
+    Customer
+WHERE 
+    Marital_Status = 'Married'
+GROUP BY 
+    ROLLUP(Income_Group)
+ORDER BY 
+    Income_Group;
 
 -- Combination 2
 SELECT EXTRACT(year FROM Dt_Customer) AS Year,
