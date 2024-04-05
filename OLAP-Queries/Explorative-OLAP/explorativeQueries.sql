@@ -9,43 +9,44 @@ LIMIT 10;
 
 -- Window Query
 WITH CustomerWineSpending AS (
-    SELECT c.Generation,
-           c.Customer_Key,
-           SUM(p.MntWines) AS Total_Wine_Spending,
-           ROW_NUMBER() OVER (PARTITION BY c.Generation ORDER BY SUM(p.MntWines) DESC) AS Wine_Spending_Rank
-    FROM SalesAnalysisFact sa
-    JOIN Customer c ON sa.Customer_Key = c.Customer_Key
-    JOIN Products p ON sa.Products_Key = p.Products_Key
-    GROUP BY c.Customer_Key
+   SELECT c.Generation,
+          c.Customer_Key,
+          SUM(p.MntWines) AS Total_Wine_Spending,
+          ROW_NUMBER() OVER (PARTITION BY c.Generation ORDER BY SUM(p.MntWines) DESC) AS Wine_Spending_Rank
+   FROM SalesAnalysisFact sa
+   JOIN Customer c ON sa.Customer_Key = c.Customer_Key
+   JOIN Products p ON sa.Products_Key = p.Products_Key
+   GROUP BY c.Customer_Key
 )
 SELECT Generation,
-       Customer_Key,
-       Total_Wine_Spending,
-       Wine_Spending_Rank
+      Customer_Key,
+      Total_Wine_Spending,
+      Wine_Spending_Rank
 FROM CustomerWineSpending;
 
 -- Window Clause Query 
-WITH CustomerSeasonalJoining AS (
-    SELECT
-        Customer_Key,
-        Education,
-        Dt_Customer,
-        CASE 
-            WHEN EXTRACT(MONTH FROM Dt_Customer) IN (3, 4, 5) THEN 'Spring'
-            WHEN EXTRACT(MONTH FROM Dt_Customer) IN (6, 7, 8) THEN 'Summer'
-            WHEN EXTRACT(MONTH FROM Dt_Customer) IN (9, 10, 11) THEN 'Fall'
-            WHEN EXTRACT(MONTH FROM Dt_Customer) IN (12, 1, 2) THEN 'Winter'
-        END AS Season
-    FROM
-        Customer
-)
 SELECT
-    Education,
-    Season,
-    COUNT(Customer_Key) AS Customer_Count_Per_Education_Level,
-    SUM(COUNT(Customer_Key)) OVER W AS Total_Customers_Per_Season
+   Customer_Key,
+   Income,
+   CASE
+       WHEN (AGE_IN_2014 >= 20 AND AGE_IN_2014 < 30) THEN '20s'
+       WHEN (AGE_IN_2014 >= 30 AND AGE_IN_2014 < 40) THEN '30s'
+       WHEN (AGE_IN_2014 >= 40 AND AGE_IN_2014 < 50) THEN '40s'
+       WHEN (AGE_IN_2014 >= 50 AND AGE_IN_2014 < 60) THEN '50s'
+       WHEN (AGE_IN_2014 >= 60 AND AGE_IN_2014 < 70) THEN '60s'
+       ELSE '70+'
+   END AS Age_Group,
+   Marital_Status,
+   ROUND(AVG(Income) OVER W, 2) AS Avg_Income_By_Age_Group_Marital_Status
 FROM
-    CustomerSeasonalJoining
-GROUP BY
-    Season, Education
-WINDOW W AS (PARTITION BY Season);
+   Customer
+WINDOW W AS (PARTITION BY
+               CASE
+                   WHEN (AGE_IN_2014 >= 20 AND AGE_IN_2014 < 30) THEN '20s'
+                   WHEN (AGE_IN_2014 >= 30 AND AGE_IN_2014 < 40) THEN '30s'
+                   WHEN (AGE_IN_2014 >= 40 AND AGE_IN_2014 < 50) THEN '40s'
+                   WHEN (AGE_IN_2014 >= 50 AND AGE_IN_2014 < 60) THEN '50s'
+                   WHEN (AGE_IN_2014 >= 60 AND AGE_IN_2014 < 70) THEN '60s'
+                   ELSE '70+'
+               END,
+               Marital_Status);
