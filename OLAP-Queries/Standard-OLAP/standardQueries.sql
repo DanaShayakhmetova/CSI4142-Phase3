@@ -18,7 +18,7 @@ ORDER BY Month;
 
 
 -- Drill Down into Income Groups
-SELECT *,
+SELECT customer_key, year_birth, education, marital_status, household_size, dt_customer,
       (SELECT CASE
                 WHEN Income < 40000 THEN 'Low Income'
                 WHEN Income BETWEEN 40000 AND 80000 THEN 'Middle Income'
@@ -37,37 +37,69 @@ WHERE Marital_Status = 'Single';
 
 
 
--- Dice by Age Group and Whether each customer complained or not
+-- Dice by Elder Age Group and Complaint
 SELECT
-    c.*,
-    subquery.Age_Group,
-    subquery.Complaint_Status,
-    subquery.Customer_Count
+   "customer_key",
+   "year_birth",
+   "education",
+   "marital_status",
+   "income",
+   "kidhome",
+   "teenhome",
+   "dt_customer",
+   "living_situation",
+   "is_parent",
+   "household_size",
+   "generation",
+   Age_Group,
+   Complaint_Status,
+   COUNT(*) AS Customer_Count
 FROM (
-    SELECT
-        c.Customer_Key,
-        CASE
-            WHEN c.age_in_2014 BETWEEN 0 AND 18 THEN 'Young'
-            WHEN c.age_in_2014 BETWEEN 19 AND 50 THEN 'Adult'
-            ELSE 'Old'
-        END AS Age_Group,
-        CASE
-            WHEN s.Complaint_Key = 400001 THEN 'Complained'
-            ELSE 'Did Not Complain'
-        END AS Complaint_Status,
-        COUNT(*) AS Customer_Count
-    FROM
-        Customer c
-    LEFT JOIN
-        SalesAnalysisFact s ON c.Customer_Key = s.Customer_Key
-    GROUP BY
-        c.Customer_Key,
-        Age_Group,
-        Complaint_Status
+   SELECT
+       c."customer_key",
+       c."year_birth",
+       c."education",
+       c."marital_status",
+       c."income",
+       c."kidhome",
+       c."teenhome",
+       c."dt_customer",
+       c."living_situation",
+       c."is_parent",
+       c."household_size",
+       c."generation",
+       CASE
+           WHEN age_in_2014 BETWEEN 0 AND 18 THEN 'Young'
+           WHEN age_in_2014 BETWEEN 19 AND 50 THEN 'Adult'
+           ELSE 'Elder'
+       END AS Age_Group,
+       CASE
+           WHEN s."complaint_key" = 400001 THEN 'Complained'
+           ELSE 'Did Not Complain'
+       END AS Complaint_Status
+   FROM
+       "customer" c
+   LEFT JOIN
+       "salesanalysisfact" s ON c."customer_key" = s."customer_key"
 ) AS subquery
-JOIN
-    Customer c ON subquery.Customer_Key = c.Customer_Key;
-
+WHERE Age_Group = 'Elder' AND Complaint_Status = 'Complained'
+GROUP BY
+  "customer_key",
+   "year_birth",
+   "education",
+   "marital_status",
+   "income",
+   "kidhome",
+   "teenhome",
+   "dt_customer",
+   "living_situation",
+   "is_parent",
+   "household_size",
+   "generation",
+   Age_Group,
+   Complaint_Status
+ORDER BY
+   Age_Group;
 
 
 -- Dice by People who are married and spend more than 100 dollars on gold  
