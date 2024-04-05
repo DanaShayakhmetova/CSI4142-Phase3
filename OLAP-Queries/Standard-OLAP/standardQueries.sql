@@ -1,5 +1,5 @@
 -- Roll up Operation on Years:
-SELECT c.*, Yearly.Year
+SELECT c.customer_key, c.year_birth, c.education, c.marital_status, c.income, c.household_size, Yearly.Year
 FROM Customer c
 JOIN (
    SELECT EXTRACT(year FROM Dt_Customer) AS Year, COUNT(*) AS Customer_Count
@@ -10,12 +10,11 @@ ORDER BY Year;
 
 
 -- Roll up Operation on Months:
-SELECT *,
+SELECT customer_key, year_birth, education, marital_status, income, household_size,
      EXTRACT(month FROM Dt_Customer) AS Month,
      COUNT(*) OVER (PARTITION BY EXTRACT(month FROM Dt_Customer)) AS Customer_Count
 FROM Customer
 ORDER BY Month;
-
 
 
 -- Drill Down into Income Groups
